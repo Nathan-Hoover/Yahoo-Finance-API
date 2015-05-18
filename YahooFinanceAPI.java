@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 public class YahooFinanceAPI {
-	public static HashMap getData(String symbol, String fromDay, String fromMonth, String fromYear, String toDay, String toMonth, String toYear, String frequency){
+	public static HashMap fromInterval(String symbol, String fromDay, String fromMonth, String fromYear, String toDay, String toMonth, String toYear, String frequency){
         HashMap<Integer, String[]> data = new HashMap<Integer, String[]>();
 		try {
 			//s = symbol ^ a = from month ^ b = from day ^ c = from year ^ d = to month
@@ -46,34 +46,78 @@ public class YahooFinanceAPI {
         return data;
 	}
 
-    public static void getLatest(String symbol, int type){
+    public static HashMap fromDate(String symbol, String fromDay, String fromMonth, String fromYear){
+        HashMap<Integer, String[]> data = new HashMap<Integer, String[]>();
+        try {
+            //s = symbol ^ a = from month ^ b = from day ^ c = from year
+            String urlString = "http://ichart.yahoo.com/table.csv?s=" + symbol
+                    + "&a=" + fromMonth
+                    + "&b=" + fromDay
+                    + "&c=" + fromYear;
+            URL url = new URL(urlString);
+            URLConnection urlConn = url.openConnection();
+            InputStreamReader inputStreamReader = new InputStreamReader(urlConn.getInputStream());
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
+            int i = 0;
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                data.put(i, line.split(","));
+                i++;
+            }
+
+            bufferedReader.close();
+            inputStreamReader.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return data;
     }
 
-    public static HashMap getLatest(String symbol){
+    public static float getLatest(String symbol, int type){
         DateFormat currentMonthFormat = new SimpleDateFormat("MM");
         DateFormat currentYearFormat = new SimpleDateFormat("yyyy");
         DateFormat currentDayFormat = new SimpleDateFormat("dd");
 
         Calendar cal = Calendar.getInstance();
-
+        cal.add(Calendar.MONTH, -1);
         cal.add(Calendar.DATE, -2);
 
         Date currentDate = cal.getTime();
 
-        String currentDay = currentDayFormat.format(currentDate);
-        String currentMonth = currentMonthFormat.format(currentDate);
-        String currentYear = currentYearFormat.format(currentDate);
+        String fromDay = currentDayFormat.format(currentDate);
+        String fromMonth = currentMonthFormat.format(currentDate);
+        String fromYear = currentYearFormat.format(currentDate);
 
-        cal.add(Calendar.DATE, -1);
+        HashMap<Integer, String[]> mapOfValues = fromDate(symbol, fromDay, fromMonth, fromYear);
 
-        currentDate = cal.getTime();
-
-        String yestDay = currentDayFormat.format(currentDate);
-        String yestMonth = currentMonthFormat.format(currentDate);
-        String yestYear = currentYearFormat.format(currentDate);
-
-        System.out.println("From " + yestYear + "-" + yestMonth + "-" + yestDay + " To " + currentYear + "-" + currentMonth + "-" + currentDay);
-        return getData(symbol, yestDay, yestMonth, yestYear, currentDay, currentMonth, currentYear, "d");
+        return Float.parseFloat(mapOfValues.get(1)[type]);
     }
+
+
+    public static String[] getLatest(String symbol){
+        DateFormat currentMonthFormat = new SimpleDateFormat("MM");
+        DateFormat currentYearFormat = new SimpleDateFormat("yyyy");
+        DateFormat currentDayFormat = new SimpleDateFormat("dd");
+
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.MONTH, -1);
+        cal.add(Calendar.DATE, -2);
+
+        Date currentDate = cal.getTime();
+
+        String fromDay = currentDayFormat.format(currentDate);
+        String fromMonth = currentMonthFormat.format(currentDate);
+        String fromYear = currentYearFormat.format(currentDate);
+
+        HashMap<Integer, String[]> mapOfValues = fromDate(symbol, fromDay, fromMonth, fromYear);
+
+        return mapOfValues.get(1);
+    }
+
+    /*public static HashMap getRange(String symbol, String fromDay, String fromMonth, String fromYear, String toDay, String toMonth, String toYear, String frequency){
+        return fromInterval(symbol, fromDay, fromMonth, fromYear, toDay, toMonth, toYear, frequency);
+    }*/
 }
