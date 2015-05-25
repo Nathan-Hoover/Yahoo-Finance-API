@@ -2,28 +2,28 @@
 An easy to use API for stock data from Yahoo Finance
 
 //Returns amended trading ammount after closing
-float getAdjClose(String symbol, Date targetDate, int type)
+String getAdjClose(String symbol, Calendar targetDate)
 
 //Returns the stock value at close
-float getClose(String symbol, Date targetDate, int type)
+String getClose(String symbol, Calendar targetDate)
 
-//Returns current stock rate
+/*//Returns current stock rate
 float getCurrent(String symbol)
 
 //Returns highest stock value for that day
-float getHigh(String symbol, Date targetDate, int type)
+String getHigh(String symbol, Calendar targetDate)
 
 //Returns lowest stock value for that day
-float getLow(String symbol, Date targetDate, int type)
+String getLow(String symbol, Calendar targetDate)
 
 //Returns value of stock at open
-float getOpen(String symbol, Date targetDate)
+String getOpen(String symbol, Calendar targetDate)
 
 //Returns Date,Open,High,Low,Close,Volume,Adj Close in HashMap format
 HashMap getRange(String symbol, Date fromDate, Date toDate)
 
 //Returns Date,Open,High,Low,Close,Volume,Adj Close in String array format
-String[] getStats(String symbol, Date targetDate)
+String[] getStats(String symbol, Calendar targetDate)
 
 //Returns amount of shares that trade hands from sellers to buyers for that day
-float getVolume(String symbol, Date targetDate, int type)
+String getVolume(String symbol, Calendar targetDate)

@@ -1,20 +1,16 @@
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 
 public class YahooFinanceAPI {
-	public static HashMap fromInterval(String symbol, Calendar fromDate, Calendar toDate, String frequency){
-        HashMap<Integer, String[]> data = new HashMap<Integer, String[]>();
+    private static HashMap fromInterval(String symbol, Calendar fromDate, Calendar toDate, String frequency) {
+        HashMap<Integer, String[]> data = new HashMap<>();
         boolean finished = false;
 
-        while(finished != true){
+        while (!finished) {
             try {
                 //s = symbol ^ a = from month ^ b = from day ^ c = from year ^ d = to month
                 //e = to day ^ f = to year ^ g = d for day | m for month | y for yearly
@@ -52,7 +48,7 @@ public class YahooFinanceAPI {
 	}
 
     public static HashMap fromDate(String symbol, String fromDay, String fromMonth, String fromYear){
-        HashMap<Integer, String[]> data = new HashMap<Integer, String[]>();
+        HashMap<Integer, String[]> data = new HashMap<>();
 
         try {
             //s = symbol ^ a = from month ^ b = from day ^ c = from year
@@ -83,70 +79,8 @@ public class YahooFinanceAPI {
         return data;
     }
 
-    /*public static float getLatest(String symbol, int type){
-        DateFormat currentMonthFormat = new SimpleDateFormat("MM");
-        DateFormat currentYearFormat = new SimpleDateFormat("yyyy");
-        DateFormat currentDayFormat = new SimpleDateFormat("dd");
-
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.MONTH, -1);
-        cal.add(Calendar.DATE, -2);
-
-        Date currentDate = cal.getTime();
-
-        String fromDay = currentDayFormat.format(currentDate);
-        String fromMonth = currentMonthFormat.format(currentDate);
-        String fromYear = currentYearFormat.format(currentDate);
-
-        HashMap<Integer, String[]> mapOfValues = fromDate(symbol, fromDay, fromMonth, fromYear);
-
-        return Float.parseFloat(mapOfValues.get(1)[type]);
-    }
-
-
-    public static String[] getLatest(String symbol){
-        DateFormat currentMonthFormat = new SimpleDateFormat("MM");
-        DateFormat currentYearFormat = new SimpleDateFormat("yyyy");
-        DateFormat currentDayFormat = new SimpleDateFormat("dd");
-
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.MONTH, -1);
-        cal.add(Calendar.DATE, -2);
-
-        Date currentDate = cal.getTime();
-
-        String fromDay = currentDayFormat.format(currentDate);
-        String fromMonth = currentMonthFormat.format(currentDate);
-        String fromYear = currentYearFormat.format(currentDate);
-
-        HashMap<Integer, String[]> mapOfValues = fromDate(symbol, fromDay, fromMonth, fromYear);
-
-        return mapOfValues.get(1);
-    }*/
-
     private static String fromType(String symbol, Calendar targetDate, int type){
-        String fromDay, fromMonth, fromYear;
-
-
-
-        if(targetDate.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY && targetDate.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY){
-            fromDay = Integer.toString(targetDate.get(Calendar.DAY_OF_MONTH));
-            fromMonth = Integer.toString(targetDate.get(Calendar.MONTH) - 1);
-            fromYear = Integer.toString(targetDate.get(Calendar.YEAR));
-        }else{
-            if(targetDate.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
-                fromDay = Integer.toString(targetDate.get(Calendar.DAY_OF_MONTH) - 1);
-                fromMonth = Integer.toString(targetDate.get(Calendar.MONTH) - 1);
-                fromYear = Integer.toString(targetDate.get(Calendar.YEAR));
-            }else{
-                fromDay = Integer.toString(targetDate.get(Calendar.DAY_OF_MONTH) - 2);
-                fromMonth = Integer.toString(targetDate.get(Calendar.MONTH) - 1);
-                fromYear = Integer.toString(targetDate.get(Calendar.YEAR));
-            }
-        }
-
         HashMap<Integer, String[]> mapOfValues = fromInterval(symbol, targetDate, targetDate, "d");
-
         return mapOfValues.get(1)[type];
     }
 
@@ -183,12 +117,13 @@ public class YahooFinanceAPI {
     //Returns Date,Open,High,Low,Close,Volume,Adj Close in HashMap format
     public static HashMap getRange(String symbol, Date fromDate, Date toDate){
 
-    }
+    }*/
 
     //Returns Date,Open,High,Low,Close,Volume,Adj Close in String array format
-    public static String[] getStats(String symbol, Date targetDate){
-
-    }*/
+    public static String[] getStats(String symbol, Calendar targetDate) {
+        HashMap<Integer, String[]> mapOfValues = fromInterval(symbol, targetDate, targetDate, "d");
+        return mapOfValues.get(1);
+    }
 
     //Returns amount of shares that trade hands from sellers to buyers for that day
     public static String getVolume(String symbol, Calendar targetDate){

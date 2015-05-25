@@ -1,5 +1,4 @@
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.Calendar;
 
 public class Main {
@@ -24,7 +23,7 @@ public class Main {
         //Testing Getting individual daily stats of a stock
         Calendar testDate = new GregorianCalendar(2015, 4, 1);
 
-        System.out.print(testDate.get(Calendar.DAY_OF_MONTH) +"|"+testDate.get(Calendar.MONTH)+"|"+testDate.get(Calendar.YEAR));
+     System.out.println(testDate.get(Calendar.DAY_OF_MONTH) + "|" + testDate.get(Calendar.MONTH) + "|" + testDate.get(Calendar.YEAR));
         String adjClose = YahooFinanceAPI.getAdjClose("AMD", testDate);
         System.out.println("Adjusted Close of AMD: " + adjClose);
         String volume = YahooFinanceAPI.getVolume("AMD", testDate);
@@ -40,9 +39,7 @@ public class Main {
 
         //Testing Weekend (Stock market Closed)
         testDate = new GregorianCalendar(2015, 4, 3);
-        System.out.print(testDate.get(Calendar.DAY_OF_MONTH) +"|");
-        System.out.print(testDate.get(Calendar.MONTH)+"|");
-        System.out.println(testDate.get(Calendar.YEAR));
+     System.out.println(testDate.get(Calendar.DAY_OF_MONTH) + "|" + testDate.get(Calendar.MONTH) + "|" + testDate.get(Calendar.YEAR));
         adjClose = YahooFinanceAPI.getAdjClose("AMD", testDate);
         System.out.println("Adjusted Close of AMD: " + adjClose);
         volume = YahooFinanceAPI.getVolume("AMD", testDate);
@@ -56,30 +53,13 @@ public class Main {
         open = YahooFinanceAPI.getOpen("AMD", testDate);
         System.out.println("Open of AMD: " + open);
 
-     ///
+     //Testing bulk data during weekend
      testDate = new GregorianCalendar(2015, 4, 4);
-
-     System.out.print(testDate.get(Calendar.DAY_OF_MONTH) +"|");
-     System.out.print(testDate.get(Calendar.MONTH)+"|");
-     System.out.println(testDate.get(Calendar.YEAR));
-      adjClose = YahooFinanceAPI.getAdjClose("AMD", testDate);
-     System.out.println("Adjusted Close of AMD: " + adjClose);
-
-      volume = YahooFinanceAPI.getVolume("AMD", testDate);
-     System.out.println("Volume of AMD: " + volume);
-
-      close = YahooFinanceAPI.getClose("AMD", testDate);
-     System.out.println("Close of AMD: " + close);
-
-      low = YahooFinanceAPI.getLow("AMD", testDate);
-     System.out.println("Low of AMD: " + low);
-
-      high = YahooFinanceAPI.getHigh("AMD", testDate);
-     System.out.println("High of AMD: " + high);
-
-      open = YahooFinanceAPI.getOpen("AMD", testDate);
-     System.out.println("Open of AMD: " + open);
-
+     System.out.println(testDate.get(Calendar.DAY_OF_MONTH) + "|" + testDate.get(Calendar.MONTH) + "|" + testDate.get(Calendar.YEAR));
+     String[] dailyStats = YahooFinanceAPI.getStats("AMD", testDate);
+     for (String statValue : dailyStats) {
+      System.out.print(statValue + " | ");
+     }
     }
 }
 
