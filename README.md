@@ -1,4 +1,4 @@
-# Yahoo-Finance-API
+# Yahoo-Finance-API by Nathaniel Hoover
 An easy to use API for stock data from Yahoo Finance
 
 //Returns amended trading amount after closing
@@ -7,7 +7,7 @@ String getAdjClose(String symbol, Calendar targetDate)
 //Returns the stock value at close
 String getClose(String symbol, Calendar targetDate)
 
-/*//Returns current stock rate
+//Returns current stock rate
 float getCurrent(String symbol)
 
 //Returns highest stock value for that day
