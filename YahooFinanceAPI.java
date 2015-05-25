@@ -1,3 +1,6 @@
+//Created by Nathaniel Hoover
+//https://github.com/divergentnate/Yahoo-Finance-API
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
