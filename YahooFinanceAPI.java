@@ -10,50 +10,57 @@ import java.util.Date;
 import java.util.HashMap;
 
 public class YahooFinanceAPI {
-	public static HashMap fromInterval(String symbol, String fromDay, String fromMonth, String fromYear, String toDay, String toMonth, String toYear, String frequency){
+	public static HashMap fromInterval(String symbol, Calendar fromDate, Calendar toDate, String frequency){
         HashMap<Integer, String[]> data = new HashMap<Integer, String[]>();
-		try {
-			//s = symbol ^ a = from month ^ b = from day ^ c = from year ^ d = to month
-			//e = to day ^ f = to year ^ g = d for day | m for month | y for yearly
-            System.out.println("From " + fromYear + "-" + fromMonth + "-" + fromDay + " To " + toYear + "-" + toMonth + "-" + toDay);
-            String urlString = "http://ichart.yahoo.com/table.csv?s=" + symbol
-                    + "&a=" + fromMonth
-                    + "&b=" + fromDay
-                    + "&c=" + fromYear
-                    + "&d=" + toMonth
-                    + "&e=" + toDay
-                    + "&f=" + toYear
-                    + "&g=" + frequency;
-		    URL url = new URL(urlString);
-		    URLConnection urlConn = url.openConnection();
-		    InputStreamReader inputStreamReader = new InputStreamReader(urlConn.getInputStream());
-		    BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+        boolean finished = false;
 
-			int i = 0;
-		    String line;
-		    while ((line = bufferedReader.readLine()) != null) {
-				data.put(i, line.split(","));
-				i++;
-		    }
+        while(finished != true){
+            try {
+                //s = symbol ^ a = from month ^ b = from day ^ c = from year ^ d = to month
+                //e = to day ^ f = to year ^ g = d for day | m for month | y for yearly
+                String urlString = "http://ichart.yahoo.com/table.csv?s=" + symbol
+                        + "&a=" + Integer.toString(fromDate.get(Calendar.MONTH) - 1)
+                        + "&b=" + Integer.toString(fromDate.get(Calendar.DAY_OF_MONTH))
+                        + "&c=" + Integer.toString(fromDate.get(Calendar.YEAR))
+                        + "&d=" + Integer.toString(toDate.get(Calendar.MONTH) - 1)
+                        + "&e=" + Integer.toString(toDate.get(Calendar.DAY_OF_MONTH))
+                        + "&f=" + Integer.toString(toDate.get(Calendar.YEAR))
+                        + "&g=" + frequency;
+                URL url = new URL(urlString);
+                URLConnection urlConn = url.openConnection();
+                InputStreamReader inputStreamReader = new InputStreamReader(urlConn.getInputStream());
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
-		    bufferedReader.close();
-			inputStreamReader.close();
+                int i = 0;
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    data.put(i, line.split(","));
+                    i++;
+                }
 
-		} catch (Exception e) {
-	    	e.printStackTrace();
-		}
+                bufferedReader.close();
+                inputStreamReader.close();
+                finished = true;
+
+            } catch (Exception e) {
+                fromDate.add(Calendar.DAY_OF_YEAR, -1);
+            }
+        }
+
 
         return data;
 	}
 
     public static HashMap fromDate(String symbol, String fromDay, String fromMonth, String fromYear){
         HashMap<Integer, String[]> data = new HashMap<Integer, String[]>();
+
         try {
             //s = symbol ^ a = from month ^ b = from day ^ c = from year
             String urlString = "http://ichart.yahoo.com/table.csv?s=" + symbol
                     + "&a=" + fromMonth
                     + "&b=" + fromDay
                     + "&c=" + fromYear;
+            System.out.println(urlString);
             URL url = new URL(urlString);
             URLConnection urlConn = url.openConnection();
             InputStreamReader inputStreamReader = new InputStreamReader(urlConn.getInputStream());
@@ -76,7 +83,7 @@ public class YahooFinanceAPI {
         return data;
     }
 
-    public static float getLatest(String symbol, int type){
+    /*public static float getLatest(String symbol, int type){
         DateFormat currentMonthFormat = new SimpleDateFormat("MM");
         DateFormat currentYearFormat = new SimpleDateFormat("yyyy");
         DateFormat currentDayFormat = new SimpleDateFormat("dd");
@@ -115,9 +122,76 @@ public class YahooFinanceAPI {
         HashMap<Integer, String[]> mapOfValues = fromDate(symbol, fromDay, fromMonth, fromYear);
 
         return mapOfValues.get(1);
+    }*/
+
+    private static String fromType(String symbol, Calendar targetDate, int type){
+        String fromDay, fromMonth, fromYear;
+
+
+
+        if(targetDate.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY && targetDate.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY){
+            fromDay = Integer.toString(targetDate.get(Calendar.DAY_OF_MONTH));
+            fromMonth = Integer.toString(targetDate.get(Calendar.MONTH) - 1);
+            fromYear = Integer.toString(targetDate.get(Calendar.YEAR));
+        }else{
+            if(targetDate.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
+                fromDay = Integer.toString(targetDate.get(Calendar.DAY_OF_MONTH) - 1);
+                fromMonth = Integer.toString(targetDate.get(Calendar.MONTH) - 1);
+                fromYear = Integer.toString(targetDate.get(Calendar.YEAR));
+            }else{
+                fromDay = Integer.toString(targetDate.get(Calendar.DAY_OF_MONTH) - 2);
+                fromMonth = Integer.toString(targetDate.get(Calendar.MONTH) - 1);
+                fromYear = Integer.toString(targetDate.get(Calendar.YEAR));
+            }
+        }
+
+        HashMap<Integer, String[]> mapOfValues = fromInterval(symbol, targetDate, targetDate, "d");
+
+        return mapOfValues.get(1)[type];
     }
 
-    /*public static HashMap getRange(String symbol, String fromDay, String fromMonth, String fromYear, String toDay, String toMonth, String toYear, String frequency){
-        return fromInterval(symbol, fromDay, fromMonth, fromYear, toDay, toMonth, toYear, frequency);
+    //Returns amended trading ammount after closing
+    public static String getAdjClose(String symbol, Calendar targetDate){
+        return fromType(symbol, targetDate, 6);
+    }
+
+    //Returns the stock value at close
+    public static String getClose(String symbol, Calendar targetDate){
+        return fromType(symbol, targetDate, 4);
+    }
+
+    /*//Returns current stock rate
+    public static float getCurrent(String symbol){
+
     }*/
+
+    //Returns highest stock value for that day
+    public static String getHigh(String symbol, Calendar targetDate){
+        return fromType(symbol, targetDate, 2);
+    }
+
+    //Returns lowest stock value for that day
+    public static String getLow(String symbol, Calendar targetDate){
+        return fromType(symbol, targetDate, 3);
+    }
+
+    //Returns value of stock at open
+    public static String getOpen(String symbol, Calendar targetDate){
+        return fromType(symbol, targetDate, 1);
+    }
+/*
+    //Returns Date,Open,High,Low,Close,Volume,Adj Close in HashMap format
+    public static HashMap getRange(String symbol, Date fromDate, Date toDate){
+
+    }
+
+    //Returns Date,Open,High,Low,Close,Volume,Adj Close in String array format
+    public static String[] getStats(String symbol, Date targetDate){
+
+    }*/
+
+    //Returns amount of shares that trade hands from sellers to buyers for that day
+    public static String getVolume(String symbol, Calendar targetDate){
+        return fromType(symbol, targetDate, 5);
+    }
 }
