@@ -8,7 +8,7 @@ import java.net.URLConnection;
 import java.util.Calendar;
 import java.util.HashMap;
 
-public class YahooFinanceAPI {
+class YahooFinanceAPI {
     private static HashMap fromInterval(String symbol, Calendar fromDate, Calendar toDate, String frequency) {
         HashMap<Integer, String[]> data = new HashMap<>();
         boolean finished = false;
@@ -50,44 +50,12 @@ public class YahooFinanceAPI {
         return data;
 	}
 
-    public static HashMap fromDate(String symbol, String fromDay, String fromMonth, String fromYear){
-        HashMap<Integer, String[]> data = new HashMap<>();
-
-        try {
-            //s = symbol ^ a = from month ^ b = from day ^ c = from year
-            String urlString = "http://ichart.yahoo.com/table.csv?s=" + symbol
-                    + "&a=" + fromMonth
-                    + "&b=" + fromDay
-                    + "&c=" + fromYear;
-            System.out.println(urlString);
-            URL url = new URL(urlString);
-            URLConnection urlConn = url.openConnection();
-            InputStreamReader inputStreamReader = new InputStreamReader(urlConn.getInputStream());
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-
-            int i = 0;
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                data.put(i, line.split(","));
-                i++;
-            }
-
-            bufferedReader.close();
-            inputStreamReader.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return data;
-    }
-
     private static String fromType(String symbol, Calendar targetDate, int type){
         HashMap<Integer, String[]> mapOfValues = fromInterval(symbol, targetDate, targetDate, "d");
         return mapOfValues.get(1)[type];
     }
 
-    //Returns amended trading ammount after closing
+    //Returns amended trading amount after closing
     public static String getAdjClose(String symbol, Calendar targetDate){
         return fromType(symbol, targetDate, 6);
     }
@@ -116,11 +84,11 @@ public class YahooFinanceAPI {
     public static String getOpen(String symbol, Calendar targetDate){
         return fromType(symbol, targetDate, 1);
     }
-/*
-    //Returns Date,Open,High,Low,Close,Volume,Adj Close in HashMap format
-    public static HashMap getRange(String symbol, Date fromDate, Date toDate){
 
-    }*/
+    //Returns Date,Open,High,Low,Close,Volume,Adj Close in HashMap format
+    public static HashMap getRange(String symbol, Calendar fromDate, Calendar toDate, String type) {
+        return fromInterval(symbol, fromDate, toDate, type);
+    }
 
     //Returns Date,Open,High,Low,Close,Volume,Adj Close in String array format
     public static String[] getStats(String symbol, Calendar targetDate) {
