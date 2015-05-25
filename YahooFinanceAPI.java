@@ -12,8 +12,9 @@ class YahooFinanceAPI {
     private static HashMap fromInterval(String symbol, Calendar fromDate, Calendar toDate, String frequency) {
         HashMap<Integer, String[]> data = new HashMap<>();
         boolean finished = false;
+        int timesLooped = 0;
 
-        while (!finished) {
+        while (!finished && timesLooped < 10) {
             try {
                 //s = symbol ^ a = from month ^ b = from day ^ c = from year ^ d = to month
                 //e = to day ^ f = to year ^ g = d for day | m for month | y for yearly
@@ -43,6 +44,7 @@ class YahooFinanceAPI {
 
             } catch (Exception e) {
                 fromDate.add(Calendar.DAY_OF_YEAR, -1);
+                timesLooped++;
             }
         }
 
